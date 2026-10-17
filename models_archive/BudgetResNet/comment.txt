@@ -1,0 +1,3 @@
+Run_1: Early stopped and still worse Performance than ExtendCNN 5x5.
+Run_2: Increase input size to 160x160. Almost doubles the runtime,
+but inconsequential improvement.

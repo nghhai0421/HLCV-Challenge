@@ -1,0 +1,51 @@
+param_count: 9726
+run:
+  date: 2026-10-17
+  result_file: result_2026-10-17_v1.txt
+  status: completed
+  requested_epochs: 50
+  completed_epochs: 50
+  script_snapshot_modified: "2026-10-17 06:06"
+  result_report_modified: "2026-10-17 05:41"
+  train_accuracy: 0.549
+  validation_accuracy: 0.539
+  checkpoint_used: ../../model.torch
+
+data:
+  root: ./dataset
+  training_split: train
+  validation_split: val
+
+model:
+  name: TinyFruitNCA
+  steps: 16
+  fire_rate: 0.5
+  input_resolution: [48, 48]
+
+training:
+  epochs: 50
+  batch_size: 32
+  learning_rate: 0.001
+  optimizer: AdamW
+  weight_decay: 0.00001
+  early_stopping_patience: 20
+  seed: 42
+  cpu_threads: 10
+  data_loader_workers: 0
+  warmup_epochs: 5
+  warmup_start_factor: 0.1
+  warmup_end_factor: 1.0
+  gradient_clip_norm: 1.0
+
+augmentation:
+  per_transform_probability: 0.5
+  horizontal_flip: true
+  affine:
+    degrees: 10
+    scale: [0.9, 1.1]
+  color_jitter:
+    brightness: 0.1
+    contrast: 0.1
+  random_erasing:
+    scale: [0.02, 0.08]
+    ratio: [0.5, 2.0]

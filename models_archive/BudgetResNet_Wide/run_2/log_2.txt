@@ -1,0 +1,184 @@
+Optimizer: AdamW | LR: 1.00e-03 | Warmup: 10 epochs | Total: 200 epochs | Total steps: 14400 | Warmup steps: 720
+Training on cpu; 9896 model parameters.
+Epoch 01/200: train_loss=2.3263, val_loss=2.2939, val_acc=0.148, lr=1.90e-04, train_time=31.80s, val_time=5.62s, epoch_time=37.44s
+  Saved new best checkpoint to model.torch
+Epoch 02/200: train_loss=2.2475, val_loss=2.1848, val_acc=0.201, lr=2.80e-04, train_time=30.00s, val_time=4.96s, epoch_time=34.97s
+  Saved new best checkpoint to model.torch
+Epoch 03/200: train_loss=2.0966, val_loss=1.9881, val_acc=0.324, lr=3.70e-04, train_time=30.39s, val_time=5.11s, epoch_time=35.51s
+  Saved new best checkpoint to model.torch
+Epoch 04/200: train_loss=1.8946, val_loss=1.8159, val_acc=0.359, lr=4.60e-04, train_time=29.91s, val_time=5.14s, epoch_time=35.07s
+  Saved new best checkpoint to model.torch
+Epoch 05/200: train_loss=1.7615, val_loss=1.7101, val_acc=0.409, lr=5.50e-04, train_time=30.18s, val_time=4.91s, epoch_time=35.09s
+  Saved new best checkpoint to model.torch
+Epoch 06/200: train_loss=1.6604, val_loss=1.6396, val_acc=0.449, lr=6.40e-04, train_time=30.22s, val_time=4.85s, epoch_time=35.08s
+  Saved new best checkpoint to model.torch
+Epoch 07/200: train_loss=1.5894, val_loss=1.5854, val_acc=0.461, lr=7.30e-04, train_time=30.09s, val_time=5.02s, epoch_time=35.12s
+  Saved new best checkpoint to model.torch
+Epoch 08/200: train_loss=1.5095, val_loss=1.5281, val_acc=0.503, lr=8.20e-04, train_time=30.37s, val_time=4.99s, epoch_time=35.38s
+  Saved new best checkpoint to model.torch
+Epoch 09/200: train_loss=1.4267, val_loss=1.4665, val_acc=0.533, lr=9.10e-04, train_time=30.04s, val_time=4.99s, epoch_time=35.03s
+  Saved new best checkpoint to model.torch
+Epoch 10/200: train_loss=1.4031, val_loss=1.4595, val_acc=0.524, lr=1.00e-03, train_time=30.23s, val_time=5.05s, epoch_time=35.28s
+Epoch 11/200: train_loss=1.3097, val_loss=1.4056, val_acc=0.532, lr=1.00e-03, train_time=30.42s, val_time=4.98s, epoch_time=35.40s
+Epoch 12/200: train_loss=1.2852, val_loss=1.3363, val_acc=0.570, lr=1.00e-03, train_time=29.96s, val_time=4.95s, epoch_time=34.92s
+  Saved new best checkpoint to model.torch
+Epoch 13/200: train_loss=1.2352, val_loss=1.2732, val_acc=0.582, lr=9.99e-04, train_time=31.16s, val_time=4.97s, epoch_time=36.14s
+  Saved new best checkpoint to model.torch
+Epoch 14/200: train_loss=1.2146, val_loss=1.3830, val_acc=0.552, lr=9.99e-04, train_time=30.08s, val_time=4.88s, epoch_time=34.96s
+Epoch 15/200: train_loss=1.1765, val_loss=1.2554, val_acc=0.584, lr=9.98e-04, train_time=29.92s, val_time=4.94s, epoch_time=34.87s
+  Saved new best checkpoint to model.torch
+Epoch 16/200: train_loss=1.1434, val_loss=1.2376, val_acc=0.616, lr=9.98e-04, train_time=29.81s, val_time=4.89s, epoch_time=34.71s
+  Saved new best checkpoint to model.torch
+Epoch 17/200: train_loss=1.1387, val_loss=1.2414, val_acc=0.594, lr=9.97e-04, train_time=30.43s, val_time=4.90s, epoch_time=35.33s
+Epoch 18/200: train_loss=1.0883, val_loss=1.2333, val_acc=0.610, lr=9.96e-04, train_time=30.19s, val_time=5.08s, epoch_time=35.27s
+Epoch 19/200: train_loss=1.0693, val_loss=1.1827, val_acc=0.628, lr=9.94e-04, train_time=30.50s, val_time=4.96s, epoch_time=35.47s
+  Saved new best checkpoint to model.torch
+Epoch 20/200: train_loss=1.0483, val_loss=1.3153, val_acc=0.588, lr=9.93e-04, train_time=29.74s, val_time=4.82s, epoch_time=34.56s
+Epoch 21/200: train_loss=1.0487, val_loss=1.1443, val_acc=0.650, lr=9.92e-04, train_time=29.86s, val_time=4.92s, epoch_time=34.79s
+  Saved new best checkpoint to model.torch
+Epoch 22/200: train_loss=1.0215, val_loss=1.2686, val_acc=0.583, lr=9.90e-04, train_time=29.35s, val_time=4.89s, epoch_time=34.24s
+Epoch 23/200: train_loss=0.9942, val_loss=1.3431, val_acc=0.568, lr=9.89e-04, train_time=29.82s, val_time=4.93s, epoch_time=34.76s
+Epoch 24/200: train_loss=1.0045, val_loss=1.1236, val_acc=0.646, lr=9.87e-04, train_time=29.01s, val_time=4.95s, epoch_time=33.96s
+Epoch 25/200: train_loss=1.0112, val_loss=1.1233, val_acc=0.660, lr=9.85e-04, train_time=29.65s, val_time=4.82s, epoch_time=34.48s
+  Saved new best checkpoint to model.torch
+Epoch 26/200: train_loss=0.9687, val_loss=1.2795, val_acc=0.624, lr=9.83e-04, train_time=29.80s, val_time=5.05s, epoch_time=34.86s
+Epoch 27/200: train_loss=0.9664, val_loss=1.1750, val_acc=0.645, lr=9.80e-04, train_time=30.18s, val_time=5.03s, epoch_time=35.21s
+Epoch 28/200: train_loss=0.9603, val_loss=1.1420, val_acc=0.652, lr=9.78e-04, train_time=29.87s, val_time=4.90s, epoch_time=34.77s
+Epoch 29/200: train_loss=0.9380, val_loss=1.1030, val_acc=0.666, lr=9.76e-04, train_time=29.79s, val_time=4.86s, epoch_time=34.67s
+  Saved new best checkpoint to model.torch
+Epoch 30/200: train_loss=0.9119, val_loss=1.0892, val_acc=0.670, lr=9.73e-04, train_time=29.63s, val_time=4.83s, epoch_time=34.46s
+  Saved new best checkpoint to model.torch
+Epoch 31/200: train_loss=0.9058, val_loss=1.0381, val_acc=0.683, lr=9.70e-04, train_time=30.08s, val_time=5.00s, epoch_time=35.09s
+  Saved new best checkpoint to model.torch
+Epoch 32/200: train_loss=0.8885, val_loss=1.1058, val_acc=0.651, lr=9.67e-04, train_time=29.75s, val_time=4.93s, epoch_time=34.68s
+Epoch 33/200: train_loss=0.8691, val_loss=1.0603, val_acc=0.673, lr=9.64e-04, train_time=29.76s, val_time=4.77s, epoch_time=34.53s
+Epoch 34/200: train_loss=0.8737, val_loss=1.0208, val_acc=0.685, lr=9.61e-04, train_time=29.64s, val_time=4.94s, epoch_time=34.59s
+  Saved new best checkpoint to model.torch
+Epoch 35/200: train_loss=0.8519, val_loss=1.1109, val_acc=0.688, lr=9.58e-04, train_time=30.33s, val_time=4.91s, epoch_time=35.25s
+  Saved new best checkpoint to model.torch
+Epoch 36/200: train_loss=0.8690, val_loss=1.1949, val_acc=0.656, lr=9.55e-04, train_time=29.77s, val_time=4.86s, epoch_time=34.62s
+Epoch 37/200: train_loss=0.8423, val_loss=1.0784, val_acc=0.680, lr=9.51e-04, train_time=30.06s, val_time=5.04s, epoch_time=35.09s
+Epoch 38/200: train_loss=0.8568, val_loss=0.9959, val_acc=0.706, lr=9.47e-04, train_time=29.42s, val_time=4.92s, epoch_time=34.34s
+  Saved new best checkpoint to model.torch
+Epoch 39/200: train_loss=0.8326, val_loss=1.0006, val_acc=0.697, lr=9.44e-04, train_time=29.29s, val_time=4.93s, epoch_time=34.22s
+Epoch 40/200: train_loss=0.8244, val_loss=1.0339, val_acc=0.667, lr=9.40e-04, train_time=29.99s, val_time=4.87s, epoch_time=34.86s
+Epoch 41/200: train_loss=0.8143, val_loss=1.0399, val_acc=0.685, lr=9.36e-04, train_time=29.56s, val_time=5.04s, epoch_time=34.59s
+Epoch 42/200: train_loss=0.8255, val_loss=1.0090, val_acc=0.700, lr=9.32e-04, train_time=29.61s, val_time=5.00s, epoch_time=34.60s
+Epoch 43/200: train_loss=0.8131, val_loss=1.0181, val_acc=0.699, lr=9.27e-04, train_time=29.32s, val_time=4.96s, epoch_time=34.28s
+Epoch 44/200: train_loss=0.7923, val_loss=1.0938, val_acc=0.664, lr=9.23e-04, train_time=29.25s, val_time=4.85s, epoch_time=34.10s
+Epoch 45/200: train_loss=0.7706, val_loss=1.0155, val_acc=0.687, lr=9.19e-04, train_time=29.66s, val_time=4.97s, epoch_time=34.63s
+Epoch 46/200: train_loss=0.7828, val_loss=1.0007, val_acc=0.691, lr=9.14e-04, train_time=29.66s, val_time=4.90s, epoch_time=34.56s
+Epoch 47/200: train_loss=0.7533, val_loss=0.9742, val_acc=0.713, lr=9.09e-04, train_time=29.68s, val_time=4.85s, epoch_time=34.54s
+  Saved new best checkpoint to model.torch
+Epoch 48/200: train_loss=0.7469, val_loss=1.0441, val_acc=0.684, lr=9.05e-04, train_time=29.70s, val_time=4.90s, epoch_time=34.60s
+Epoch 49/200: train_loss=0.7657, val_loss=0.9653, val_acc=0.707, lr=9.00e-04, train_time=29.69s, val_time=4.90s, epoch_time=34.60s
+Epoch 50/200: train_loss=0.7543, val_loss=1.0114, val_acc=0.695, lr=8.95e-04, train_time=29.69s, val_time=4.88s, epoch_time=34.58s
+Epoch 51/200: train_loss=0.7517, val_loss=1.0390, val_acc=0.691, lr=8.90e-04, train_time=29.82s, val_time=4.79s, epoch_time=34.61s
+Epoch 52/200: train_loss=0.7561, val_loss=1.0608, val_acc=0.702, lr=8.84e-04, train_time=31.35s, val_time=4.93s, epoch_time=36.29s
+Epoch 53/200: train_loss=0.7420, val_loss=0.9256, val_acc=0.713, lr=8.79e-04, train_time=30.21s, val_time=4.87s, epoch_time=35.09s
+  Saved new best checkpoint to model.torch
+Epoch 54/200: train_loss=0.7306, val_loss=0.9554, val_acc=0.707, lr=8.74e-04, train_time=30.08s, val_time=4.90s, epoch_time=34.97s
+Epoch 55/200: train_loss=0.7187, val_loss=1.1155, val_acc=0.673, lr=8.68e-04, train_time=30.72s, val_time=5.00s, epoch_time=35.72s
+Epoch 56/200: train_loss=0.7337, val_loss=0.9723, val_acc=0.722, lr=8.62e-04, train_time=29.99s, val_time=5.06s, epoch_time=35.06s
+  Saved new best checkpoint to model.torch
+Epoch 57/200: train_loss=0.7155, val_loss=0.9369, val_acc=0.725, lr=8.57e-04, train_time=29.96s, val_time=4.88s, epoch_time=34.85s
+  Saved new best checkpoint to model.torch
+Epoch 58/200: train_loss=0.6858, val_loss=0.9417, val_acc=0.726, lr=8.51e-04, train_time=29.54s, val_time=4.82s, epoch_time=34.36s
+  Saved new best checkpoint to model.torch
+Epoch 59/200: train_loss=0.6966, val_loss=0.8951, val_acc=0.724, lr=8.45e-04, train_time=30.51s, val_time=5.13s, epoch_time=35.64s
+Epoch 60/200: train_loss=0.6782, val_loss=0.9573, val_acc=0.711, lr=8.39e-04, train_time=29.82s, val_time=4.97s, epoch_time=34.79s
+Epoch 61/200: train_loss=0.6804, val_loss=0.9592, val_acc=0.714, lr=8.33e-04, train_time=29.73s, val_time=4.89s, epoch_time=34.62s
+Epoch 62/200: train_loss=0.6750, val_loss=0.9426, val_acc=0.716, lr=8.26e-04, train_time=30.26s, val_time=4.95s, epoch_time=35.20s
+Epoch 63/200: train_loss=0.6560, val_loss=0.9132, val_acc=0.720, lr=8.20e-04, train_time=30.08s, val_time=4.96s, epoch_time=35.04s
+Epoch 64/200: train_loss=0.6638, val_loss=0.9518, val_acc=0.730, lr=8.14e-04, train_time=30.04s, val_time=4.80s, epoch_time=34.85s
+  Saved new best checkpoint to model.torch
+Epoch 65/200: train_loss=0.6753, val_loss=1.0517, val_acc=0.699, lr=8.07e-04, train_time=30.14s, val_time=5.06s, epoch_time=35.20s
+Epoch 66/200: train_loss=0.6767, val_loss=1.0298, val_acc=0.706, lr=8.01e-04, train_time=30.29s, val_time=4.98s, epoch_time=35.27s
+Epoch 67/200: train_loss=0.6655, val_loss=0.9715, val_acc=0.714, lr=7.94e-04, train_time=29.49s, val_time=4.97s, epoch_time=34.47s
+Epoch 68/200: train_loss=0.6578, val_loss=1.0611, val_acc=0.696, lr=7.87e-04, train_time=29.99s, val_time=4.85s, epoch_time=34.84s
+Epoch 69/200: train_loss=0.6375, val_loss=0.9337, val_acc=0.731, lr=7.81e-04, train_time=30.36s, val_time=4.82s, epoch_time=35.19s
+  Saved new best checkpoint to model.torch
+Epoch 70/200: train_loss=0.6539, val_loss=0.9048, val_acc=0.726, lr=7.74e-04, train_time=29.21s, val_time=4.95s, epoch_time=34.17s
+Epoch 71/200: train_loss=0.6283, val_loss=0.9220, val_acc=0.717, lr=7.67e-04, train_time=29.64s, val_time=4.73s, epoch_time=34.38s
+Epoch 72/200: train_loss=0.6484, val_loss=0.8588, val_acc=0.727, lr=7.60e-04, train_time=29.60s, val_time=4.94s, epoch_time=34.55s
+Epoch 73/200: train_loss=0.6156, val_loss=0.9724, val_acc=0.704, lr=7.53e-04, train_time=29.28s, val_time=5.05s, epoch_time=34.34s
+Epoch 74/200: train_loss=0.6178, val_loss=0.9028, val_acc=0.751, lr=7.45e-04, train_time=29.42s, val_time=4.92s, epoch_time=34.34s
+  Saved new best checkpoint to model.torch
+Epoch 75/200: train_loss=0.6421, val_loss=0.9049, val_acc=0.726, lr=7.38e-04, train_time=29.44s, val_time=4.99s, epoch_time=34.43s
+Epoch 76/200: train_loss=0.6035, val_loss=0.8714, val_acc=0.746, lr=7.31e-04, train_time=29.56s, val_time=4.88s, epoch_time=34.44s
+Epoch 77/200: train_loss=0.5880, val_loss=0.8942, val_acc=0.739, lr=7.24e-04, train_time=29.66s, val_time=4.96s, epoch_time=34.62s
+Epoch 78/200: train_loss=0.6278, val_loss=0.9117, val_acc=0.732, lr=7.16e-04, train_time=29.41s, val_time=4.91s, epoch_time=34.32s
+Epoch 79/200: train_loss=0.5925, val_loss=0.8950, val_acc=0.736, lr=7.09e-04, train_time=29.76s, val_time=4.74s, epoch_time=34.50s
+Epoch 80/200: train_loss=0.5998, val_loss=0.8875, val_acc=0.740, lr=7.01e-04, train_time=29.47s, val_time=4.82s, epoch_time=34.29s
+Epoch 81/200: train_loss=0.5954, val_loss=0.8849, val_acc=0.734, lr=6.94e-04, train_time=30.20s, val_time=4.90s, epoch_time=35.10s
+Epoch 82/200: train_loss=0.5808, val_loss=1.0007, val_acc=0.726, lr=6.86e-04, train_time=30.26s, val_time=4.86s, epoch_time=35.12s
+Epoch 83/200: train_loss=0.5671, val_loss=0.8965, val_acc=0.740, lr=6.78e-04, train_time=29.58s, val_time=4.85s, epoch_time=34.44s
+Epoch 84/200: train_loss=0.5830, val_loss=1.0029, val_acc=0.715, lr=6.70e-04, train_time=29.05s, val_time=4.81s, epoch_time=33.86s
+Epoch 85/200: train_loss=0.5970, val_loss=0.8750, val_acc=0.740, lr=6.63e-04, train_time=30.26s, val_time=4.76s, epoch_time=35.02s
+Epoch 86/200: train_loss=0.5818, val_loss=0.9435, val_acc=0.733, lr=6.55e-04, train_time=29.75s, val_time=5.01s, epoch_time=34.76s
+Epoch 87/200: train_loss=0.5761, val_loss=0.9360, val_acc=0.730, lr=6.47e-04, train_time=29.97s, val_time=4.88s, epoch_time=34.85s
+Epoch 88/200: train_loss=0.5514, val_loss=0.8788, val_acc=0.746, lr=6.39e-04, train_time=29.51s, val_time=4.97s, epoch_time=34.48s
+Epoch 89/200: train_loss=0.5523, val_loss=0.8893, val_acc=0.741, lr=6.31e-04, train_time=29.86s, val_time=4.99s, epoch_time=34.85s
+Epoch 90/200: train_loss=0.5464, val_loss=0.8830, val_acc=0.739, lr=6.23e-04, train_time=29.83s, val_time=4.91s, epoch_time=34.74s
+Epoch 91/200: train_loss=0.5666, val_loss=0.9397, val_acc=0.701, lr=6.15e-04, train_time=29.63s, val_time=4.84s, epoch_time=34.47s
+Epoch 92/200: train_loss=0.5736, val_loss=0.8656, val_acc=0.743, lr=6.07e-04, train_time=29.51s, val_time=4.83s, epoch_time=34.34s
+Epoch 93/200: train_loss=0.5648, val_loss=0.8436, val_acc=0.751, lr=5.99e-04, train_time=29.54s, val_time=4.82s, epoch_time=34.37s
+  Saved new best checkpoint to model.torch
+Epoch 94/200: train_loss=0.5413, val_loss=0.9045, val_acc=0.735, lr=5.91e-04, train_time=29.65s, val_time=4.86s, epoch_time=34.51s
+Epoch 95/200: train_loss=0.5448, val_loss=0.9462, val_acc=0.746, lr=5.83e-04, train_time=29.80s, val_time=4.96s, epoch_time=34.76s
+Epoch 96/200: train_loss=0.5430, val_loss=0.8818, val_acc=0.731, lr=5.75e-04, train_time=29.90s, val_time=4.80s, epoch_time=34.70s
+Epoch 97/200: train_loss=0.5523, val_loss=0.8715, val_acc=0.740, lr=5.66e-04, train_time=29.26s, val_time=4.90s, epoch_time=34.16s
+Epoch 98/200: train_loss=0.5399, val_loss=0.9817, val_acc=0.731, lr=5.58e-04, train_time=29.32s, val_time=4.80s, epoch_time=34.13s
+Epoch 99/200: train_loss=0.5446, val_loss=0.8792, val_acc=0.751, lr=5.50e-04, train_time=29.64s, val_time=4.78s, epoch_time=34.42s
+Epoch 100/200: train_loss=0.5471, val_loss=0.9785, val_acc=0.744, lr=5.42e-04, train_time=29.52s, val_time=4.97s, epoch_time=34.49s
+Epoch 101/200: train_loss=0.5238, val_loss=0.9734, val_acc=0.741, lr=5.34e-04, train_time=30.08s, val_time=4.87s, epoch_time=34.95s
+Epoch 102/200: train_loss=0.5159, val_loss=0.8701, val_acc=0.742, lr=5.25e-04, train_time=28.90s, val_time=5.04s, epoch_time=33.94s
+Epoch 103/200: train_loss=0.5247, val_loss=0.8677, val_acc=0.746, lr=5.17e-04, train_time=29.52s, val_time=4.88s, epoch_time=34.39s
+Epoch 104/200: train_loss=0.5338, val_loss=0.8832, val_acc=0.753, lr=5.09e-04, train_time=29.71s, val_time=4.90s, epoch_time=34.62s
+  Saved new best checkpoint to model.torch
+Epoch 105/200: train_loss=0.5317, val_loss=0.9475, val_acc=0.734, lr=5.00e-04, train_time=29.82s, val_time=4.95s, epoch_time=34.78s
+Epoch 106/200: train_loss=0.5180, val_loss=0.8940, val_acc=0.744, lr=4.92e-04, train_time=29.86s, val_time=4.84s, epoch_time=34.70s
+Epoch 107/200: train_loss=0.5266, val_loss=0.8343, val_acc=0.753, lr=4.84e-04, train_time=29.26s, val_time=4.90s, epoch_time=34.16s
+  Saved new best checkpoint to model.torch
+Epoch 108/200: train_loss=0.5121, val_loss=0.9668, val_acc=0.741, lr=4.76e-04, train_time=29.52s, val_time=4.81s, epoch_time=34.33s
+Epoch 109/200: train_loss=0.5118, val_loss=0.9047, val_acc=0.737, lr=4.67e-04, train_time=29.84s, val_time=4.77s, epoch_time=34.61s
+Epoch 110/200: train_loss=0.5058, val_loss=0.8885, val_acc=0.749, lr=4.59e-04, train_time=29.38s, val_time=4.89s, epoch_time=34.27s
+Epoch 111/200: train_loss=0.4869, val_loss=0.8739, val_acc=0.751, lr=4.51e-04, train_time=29.68s, val_time=4.90s, epoch_time=34.58s
+Epoch 112/200: train_loss=0.4950, val_loss=0.9709, val_acc=0.733, lr=4.43e-04, train_time=29.55s, val_time=4.75s, epoch_time=34.30s
+Epoch 113/200: train_loss=0.4830, val_loss=0.9075, val_acc=0.748, lr=4.35e-04, train_time=29.43s, val_time=4.95s, epoch_time=34.38s
+Epoch 114/200: train_loss=0.5074, val_loss=0.8820, val_acc=0.747, lr=4.26e-04, train_time=29.87s, val_time=4.82s, epoch_time=34.69s
+Epoch 115/200: train_loss=0.4577, val_loss=0.9162, val_acc=0.733, lr=4.18e-04, train_time=29.26s, val_time=4.92s, epoch_time=34.18s
+Epoch 116/200: train_loss=0.4879, val_loss=0.8521, val_acc=0.754, lr=4.10e-04, train_time=29.85s, val_time=4.82s, epoch_time=34.68s
+  Saved new best checkpoint to model.torch
+Epoch 117/200: train_loss=0.4910, val_loss=0.9223, val_acc=0.726, lr=4.02e-04, train_time=29.29s, val_time=4.94s, epoch_time=34.22s
+Epoch 118/200: train_loss=0.4742, val_loss=0.8399, val_acc=0.761, lr=3.94e-04, train_time=29.34s, val_time=4.97s, epoch_time=34.32s
+  Saved new best checkpoint to model.torch
+Epoch 119/200: train_loss=0.4551, val_loss=0.8935, val_acc=0.741, lr=3.86e-04, train_time=29.21s, val_time=4.77s, epoch_time=33.98s
+Epoch 120/200: train_loss=0.4801, val_loss=0.8573, val_acc=0.745, lr=3.78e-04, train_time=29.13s, val_time=4.80s, epoch_time=33.93s
+Epoch 121/200: train_loss=0.4583, val_loss=0.8858, val_acc=0.738, lr=3.70e-04, train_time=29.40s, val_time=4.84s, epoch_time=34.24s
+Epoch 122/200: train_loss=0.4772, val_loss=0.9201, val_acc=0.743, lr=3.62e-04, train_time=29.48s, val_time=4.94s, epoch_time=34.42s
+Epoch 123/200: train_loss=0.4904, val_loss=0.8724, val_acc=0.749, lr=3.54e-04, train_time=29.60s, val_time=4.96s, epoch_time=34.56s
+Epoch 124/200: train_loss=0.4793, val_loss=0.9220, val_acc=0.744, lr=3.46e-04, train_time=29.38s, val_time=4.89s, epoch_time=34.27s
+Epoch 125/200: train_loss=0.4584, val_loss=0.8857, val_acc=0.739, lr=3.38e-04, train_time=29.30s, val_time=4.91s, epoch_time=34.21s
+Epoch 126/200: train_loss=0.4836, val_loss=1.0143, val_acc=0.715, lr=3.31e-04, train_time=29.68s, val_time=4.96s, epoch_time=34.65s
+Epoch 127/200: train_loss=0.4605, val_loss=0.9462, val_acc=0.733, lr=3.23e-04, train_time=29.25s, val_time=4.93s, epoch_time=34.18s
+Epoch 128/200: train_loss=0.4612, val_loss=0.8636, val_acc=0.757, lr=3.15e-04, train_time=29.61s, val_time=4.90s, epoch_time=34.52s
+Epoch 129/200: train_loss=0.4368, val_loss=0.8889, val_acc=0.741, lr=3.07e-04, train_time=29.41s, val_time=4.91s, epoch_time=34.33s
+Epoch 130/200: train_loss=0.4546, val_loss=0.8411, val_acc=0.758, lr=3.00e-04, train_time=29.49s, val_time=4.89s, epoch_time=34.38s
+Epoch 131/200: train_loss=0.4469, val_loss=0.8951, val_acc=0.753, lr=2.92e-04, train_time=29.95s, val_time=4.97s, epoch_time=34.92s
+Epoch 132/200: train_loss=0.4593, val_loss=0.8793, val_acc=0.752, lr=2.85e-04, train_time=29.36s, val_time=4.91s, epoch_time=34.27s
+Epoch 133/200: train_loss=0.4578, val_loss=0.9197, val_acc=0.745, lr=2.77e-04, train_time=29.58s, val_time=4.90s, epoch_time=34.48s
+Epoch 134/200: train_loss=0.4501, val_loss=0.8743, val_acc=0.752, lr=2.70e-04, train_time=30.17s, val_time=4.86s, epoch_time=35.03s
+Epoch 135/200: train_loss=0.4467, val_loss=0.8533, val_acc=0.758, lr=2.63e-04, train_time=29.46s, val_time=4.78s, epoch_time=34.25s
+Epoch 136/200: train_loss=0.4311, val_loss=0.9055, val_acc=0.755, lr=2.56e-04, train_time=29.80s, val_time=4.88s, epoch_time=34.68s
+Epoch 137/200: train_loss=0.4475, val_loss=0.8975, val_acc=0.760, lr=2.48e-04, train_time=29.47s, val_time=4.93s, epoch_time=34.40s
+Epoch 138/200: train_loss=0.4305, val_loss=0.8579, val_acc=0.752, lr=2.41e-04, train_time=29.66s, val_time=4.80s, epoch_time=34.46s
+Epoch 139/200: train_loss=0.4421, val_loss=0.9105, val_acc=0.752, lr=2.34e-04, train_time=29.39s, val_time=4.78s, epoch_time=34.16s
+Epoch 140/200: train_loss=0.4370, val_loss=0.8766, val_acc=0.749, lr=2.27e-04, train_time=29.89s, val_time=5.07s, epoch_time=34.96s
+Epoch 141/200: train_loss=0.4299, val_loss=0.9176, val_acc=0.754, lr=2.20e-04, train_time=29.59s, val_time=4.77s, epoch_time=34.36s
+Epoch 142/200: train_loss=0.4388, val_loss=0.8703, val_acc=0.761, lr=2.14e-04, train_time=29.28s, val_time=4.79s, epoch_time=34.07s
+Epoch 143/200: train_loss=0.4255, val_loss=0.8943, val_acc=0.744, lr=2.07e-04, train_time=29.54s, val_time=4.89s, epoch_time=34.43s
+Early stopping after 143 epochs.
+Best validation accuracy: 0.761
+Best checkpoint: model.torch
+Total training run time: 4960.77s

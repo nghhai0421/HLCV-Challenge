@@ -1,0 +1,2 @@
+Rollout step makes the model too Slow. Model too shallow. Cannot utilize NCA strength.
+Maybe can be redesigned later.

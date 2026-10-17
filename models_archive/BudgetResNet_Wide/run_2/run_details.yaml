@@ -1,0 +1,151 @@
+param_count: 9896
+run:
+  date: 2026-10-17
+  result_file: result_2026-10-17_2.txt
+  log_file: log_2.txt
+  status: completed
+  requested_epochs: 200
+  completed_epochs: 143
+  stopped_early: true
+  best_epoch: 118
+  train_accuracy: 0.901
+  validation_accuracy: 0.761
+  best_checkpoint_validation_loss: 0.8399
+  total_training_seconds: 4960.77
+  device: cpu
+  checkpoint_name: model.torch
+  checkpoint_archived: true
+  training_script: challenge_train.py
+  metadata_sources: [challenge_train.py, log_2.txt, result_2026-10-17_2.txt]
+  source_comparison:
+    script_last_modified: '2026-10-17 18:05:51'
+    log_last_modified: '2026-10-17 17:41:45'
+    script_modified_after_log: true
+    note: 'The archived script is the current file and was modified after training completed. Logged LR, epoch counts, step counts, and outcomes take precedence. Unlogged settings, including augmentation and weight decay, describe the current script and cannot be confirmed as the exact run configuration.'
+
+data:
+  root: ./dataset
+  training_split: train
+  validation_split: val
+
+model:
+  name: BudgetResNet_Wide
+  input_resolution: [128, 128]
+  input_channels: 3
+  stem:
+    convolution_channels: [3, 12]
+    convolution_kernel_size: 5
+    convolution_stride: 1
+    convolution_padding: 2
+    convolution_bias: false
+    batch_normalization: true
+    activation: ReLU
+    max_pool_kernel_size: 2
+    max_pool_stride: 2
+    output_resolution: [64, 64]
+    trainable_params: 924
+  bottleneck:
+    convolution_kernel_sizes: [1, 3, 1]
+    convolution_strides: [1, 1, 1]
+    convolution_padding: [0, 1, 0]
+    middle_convolution: depthwise
+    middle_convolution_groups: bottleneck_channels
+    convolution_bias: false
+    batch_normalization: true
+    activation: ReLU
+    shortcut_addition_activation: ReLU
+  stages:
+    stage_1:
+      blocks:
+        - type: identity
+          channels: [12, 18, 18, 12]
+          output_resolution: [64, 64]
+          trainable_params: 690
+        - type: identity
+          channels: [12, 18, 18, 12]
+          output_resolution: [64, 64]
+          trainable_params: 690
+        - type: projection_downsample
+          channels: [12, 18, 18, 20]
+          convolution_strides: [1, 2, 1]
+          shortcut_projection: [12, 20]
+          output_resolution: [32, 32]
+          trainable_params: 1130
+      trainable_params: 2510
+    stage_2:
+      blocks:
+        - type: identity
+          channels: [20, 28, 28, 20]
+          output_resolution: [32, 32]
+          trainable_params: 1524
+        - type: identity
+          channels: [20, 28, 28, 20]
+          output_resolution: [32, 32]
+          trainable_params: 1524
+        - type: projection_downsample
+          channels: [20, 28, 28, 40]
+          convolution_strides: [1, 2, 1]
+          shortcut_projection: [20, 40]
+          output_resolution: [16, 16]
+          trainable_params: 3004
+      trainable_params: 6052
+  downsampling:
+    residual_stride_location: depthwise_3x3_convolution
+    projection_kernel_size: 1
+    projection_stride: 2
+    projection_batch_normalization: true
+  global_average_pooling: true
+  classifier_input_features: 40
+  num_classes: 10
+  classifier_bias: true
+  classifier_trainable_params: 410
+
+training:
+  epochs: 200
+  batch_size: 32
+  learning_rate: 0.001
+  optimizer: AdamW
+  weight_decay: 0.001
+  loss: CrossEntropyLoss
+  early_stopping_patience: 25
+  checkpoint_selection: highest_validation_accuracy_then_lowest_validation_loss
+  seed: 42
+  cpu_threads: 10
+  data_loader_workers: 0
+  warmup_epochs: 10
+  warmup_start_factor: 0.1
+  warmup_end_factor: 1.0
+  warmup_interval: batch
+  scheduler: linear_warmup_then_cosine_annealing
+  scheduler_interval: batch
+  min_learning_rate: 0.000001
+  steps_per_epoch: 72
+  total_steps: 14400
+  warmup_steps: 720
+  cosine_steps: 13680
+  completed_steps: 10296
+  gradient_clip_norm: 1.0
+
+preprocessing:
+  resize: [128, 128]
+  antialias: true
+  normalize_mean: [0.5, 0.5, 0.5]
+  normalize_std: [1.0, 1.0, 1.0]
+
+augmentation:
+  per_transform_probability: 0.5
+  horizontal_flip: true
+  affine:
+    degrees: 10
+    translate: [0.05, 0.05]
+    scale: [0.9, 1.1]
+    interpolation: bilinear
+    fill: 128
+  color_jitter:
+    brightness: 0.1
+    contrast: 0.1
+  random_erasing:
+    scale: [0.02, 0.08]
+    ratio: [0.5, 2.0]
+    value: 0.0
+

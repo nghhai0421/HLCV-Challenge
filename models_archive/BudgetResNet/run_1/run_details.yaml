@@ -1,0 +1,128 @@
+param_count: 9946
+run:
+  date: 2026-10-17
+  result_file: result_2026-10-17_v1.txt
+  log_file: log_v1.txt
+  status: completed
+  requested_epochs: 100
+  completed_epochs: 89
+  stopped_early: true
+  best_epoch: 69
+  train_accuracy: 0.777
+  validation_accuracy: 0.725
+  best_checkpoint_validation_loss: 0.9874
+  total_training_seconds: 2319.51
+  device: cpu
+  checkpoint_name: model.torch
+  checkpoint_archived: false
+  metadata_sources: [log_v1.txt, result_2026-10-17_v1.txt]
+
+data:
+  root: ./dataset
+  training_split: train
+  validation_split: val
+
+model:
+  name: BudgetResNet
+  input_resolution: [124, 124]
+  input_channels: 3
+  stem:
+    convolution_channels: [3, 12]
+    convolution_kernel_size: 5
+    convolution_stride: 1
+    convolution_padding: 2
+    convolution_bias: false
+    batch_normalization: true
+    activation: ReLU
+    max_pool_kernel_size: 2
+    max_pool_stride: 2
+  bottleneck:
+    convolution_kernel_sizes: [1, 3, 1]
+    convolution_strides: [1, 1, 1]
+    convolution_padding: [0, 1, 0]
+    convolution_bias: false
+    batch_normalization: true
+    activation: ReLU
+    shortcut_addition_activation: ReLU
+  stages:
+    stage_1:
+      blocks:
+        - type: identity
+          channels: [12, 10, 10, 12]
+          output_resolution: [62, 62]
+          trainable_params: 1204
+        - type: identity
+          channels: [12, 10, 10, 12]
+          output_resolution: [62, 62]
+          trainable_params: 1204
+        - type: projection_downsample
+          channels: [12, 10, 10, 16]
+          convolution_strides: [1, 2, 1]
+          shortcut_projection: [12, 16]
+          output_resolution: [31, 31]
+          trainable_params: 1476
+    stage_2:
+      blocks:
+        - type: identity
+          channels: [16, 10, 10, 16]
+          output_resolution: [31, 31]
+          trainable_params: 1292
+        - type: identity
+          channels: [16, 10, 10, 16]
+          output_resolution: [31, 31]
+          trainable_params: 1292
+        - type: projection_downsample
+          channels: [16, 12, 12, 24]
+          convolution_strides: [1, 2, 1]
+          shortcut_projection: [16, 24]
+          output_resolution: [16, 16]
+          trainable_params: 2304
+  downsampling:
+    residual_stride_location: bottleneck_3x3_convolution
+    projection_kernel_size: 1
+    projection_stride: 2
+    projection_batch_normalization: true
+  global_average_pooling: true
+  classifier_input_features: 24
+  num_classes: 10
+  classifier_bias: true
+
+training:
+  epochs: 100
+  batch_size: 32
+  learning_rate: 0.001
+  optimizer: AdamW
+  weight_decay: 0.00001
+  loss: CrossEntropyLoss
+  early_stopping_patience: 20
+  checkpoint_selection: highest_validation_accuracy_then_lowest_validation_loss
+  seed: 42
+  cpu_threads: 10
+  data_loader_workers: 0
+  warmup_epochs: 5
+  warmup_start_factor: 0.1
+  warmup_end_factor: 1.0
+  warmup_interval: batch
+  gradient_clip_norm: 1.0
+
+preprocessing:
+  resize: [124, 124]
+  antialias: true
+  normalize_mean: [0.5, 0.5, 0.5]
+  normalize_std: [1.0, 1.0, 1.0]
+
+augmentation:
+  per_transform_probability: 0.5
+  horizontal_flip: true
+  affine:
+    degrees: 10
+    scale: [0.9, 1.1]
+    interpolation: bilinear
+    fill: 128
+  color_jitter:
+    brightness: 0.1
+    contrast: 0.1
+  random_erasing:
+    scale: [0.02, 0.08]
+    ratio: [0.5, 2.0]
+    value: 0.0

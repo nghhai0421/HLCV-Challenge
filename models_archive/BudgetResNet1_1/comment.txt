@@ -1,0 +1,7 @@
+With all the added revolutionizing CNN artchitecture, it still loses out slightly
+to the normal ExtendedCNN 5x5. The extendedCNN still retains decent final resolution 15x15,
+while this one with aggresive down sampling, with the hope of increasing channeles,
+only has 8x8 final resolution. Maybe the number of channel is not enough for that
+amount of final resolution, given the 10k param budget
+
+Next is shallower/wider implementation

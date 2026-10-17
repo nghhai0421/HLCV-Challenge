@@ -1,0 +1,6 @@
+Run 1: Best attempt for ResNet so far.
+Will now look at augmentations and Optimization for more tuning
+
+Run 2: Added LR Cosine Scheduler. Reduce Masking prop to 0.2. Increased epoch to 200,
+with 10 warm up. Training acc passed 0.9 but val decreases a bit. Larger generalization gap
+

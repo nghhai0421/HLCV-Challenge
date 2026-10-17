@@ -1,0 +1,3 @@
+Put 5x5 kernel at start, with no padding for downsampling.
+Negligent improvement, probably because of increased receptive field.
+No early stop, room for improvment

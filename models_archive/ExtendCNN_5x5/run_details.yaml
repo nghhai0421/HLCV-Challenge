@@ -1,0 +1,82 @@
+param_count: 9354
+run:
+  date: 2026-10-17
+  result_file: result_2026-10-17_v1.txt
+  log_file: log_v1.txt
+  status: completed
+  requested_epochs: 100
+  completed_epochs: 100
+  stopped_early: false
+  best_epoch: 92
+  train_accuracy: 0.825
+  validation_accuracy: 0.740
+  best_checkpoint_validation_loss: 0.8624
+  total_training_seconds: 1285.74
+  device: cpu
+  checkpoint_used: model.torch
+  metadata_sources: [challenge_train.py, result_2026-10-17_v1.txt, log_v1.txt]
+
+data:
+  root: ./dataset
+  training_split: train
+  validation_split: val
+
+model:
+  name: extendcnn_5x5
+  input_resolution: [128, 128]
+  input_channels: 3
+  convolution_channels: [8, 12, 16, 16, 24]
+  convolution_kernel_sizes: [5, 3, 3, 3, 3]
+  convolution_strides: [1, 1, 1, 1, 1]
+  convolution_padding: [0, 1, 1, 1, 1]
+  convolution_padding_mode: zeros
+  convolution_bias: false
+  batch_normalization: true
+  activation: ReLU
+  max_pool_after_blocks: [1, 2, 4]
+  max_pool_kernel_size: 2
+  max_pool_stride: 2
+  global_average_pooling: true
+  classifier_input_features: 24
+  num_classes: 10
+  classifier_bias: true
+
+training:
+  epochs: 100
+  batch_size: 32
+  learning_rate: 0.001
+  optimizer: AdamW
+  weight_decay: 0.00001
+  loss: CrossEntropyLoss
+  early_stopping_patience: 20
+  checkpoint_selection: highest_validation_accuracy_then_lowest_validation_loss
+  seed: 42
+  cpu_threads: 10
+  data_loader_workers: 0
+  warmup_epochs: 5
+  warmup_start_factor: 0.1
+  warmup_end_factor: 1.0
+  warmup_interval: batch
+  gradient_clip_norm: 1.0
+
+preprocessing:
+  resize: [128, 128]
+  antialias: true
+  normalize_mean: [0.5, 0.5, 0.5]
+  normalize_std: [1.0, 1.0, 1.0]
+
+augmentation:
+  per_transform_probability: 0.5
+  horizontal_flip: true
+  affine:
+    degrees: 10
+    scale: [0.9, 1.1]
+    interpolation: bilinear
+    fill: 128
+  color_jitter:
+    brightness: 0.1
+    contrast: 0.1
+  random_erasing:
+    scale: [0.02, 0.08]
+    ratio: [0.5, 2.0]
+    value: 0.0

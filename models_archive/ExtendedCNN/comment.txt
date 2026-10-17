@@ -1,0 +1,3 @@
+Larger Input 128x128. 2 More CNN layers. Better Training Accuracy.
+Better Validation accuracy. but only by 10%.
+Seems to converge faster because of early stop at epoch 68

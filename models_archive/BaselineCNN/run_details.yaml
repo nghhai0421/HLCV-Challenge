@@ -1,0 +1,81 @@
+param_count: 5170
+run:
+  date: 2026-10-17
+  result_file: result_2026-10-17_v1.txt
+  log_file: log_v1.txt
+  status: completed
+  requested_epochs: 100
+  completed_epochs: 100
+  best_epoch: 98
+  train_accuracy: 0.729
+  validation_accuracy: 0.643
+  best_checkpoint_validation_loss: 1.0413
+  total_training_seconds: 586.67
+  device: cpu
+  checkpoint_used: model.torch
+  metadata_sources: [challenge_train.py, result_2026-10-17_v1.txt, user_provided_training_log]
+
+data:
+  root: ./dataset
+  training_split: train
+  validation_split: val
+
+model:
+  name: BaselineCNN
+  input_resolution: [32, 32]
+  input_channels: 3
+  convolution_channels: [8, 16, 24]
+  convolution_kernel_size: 3
+  convolution_stride: 1
+  convolution_padding: 1
+  convolution_padding_mode: zeros
+  convolution_bias: false
+  batch_normalization: true
+  activation: ReLU
+  max_pool_after_blocks: [1, 2]
+  max_pool_kernel_size: 2
+  max_pool_stride: 2
+  global_average_pooling: true
+  classifier_input_features: 24
+  num_classes: 10
+  classifier_bias: true
+
+training:
+  epochs: 100
+  batch_size: 32
+  learning_rate: 0.001
+  optimizer: AdamW
+  weight_decay: 0.00001
+  loss: CrossEntropyLoss
+  early_stopping_patience: 20
+  checkpoint_selection: highest_validation_accuracy_then_lowest_validation_loss
+  seed: 42
+  cpu_threads: 10
+  data_loader_workers: 0
+  warmup_epochs: 5
+  warmup_start_factor: 0.1
+  warmup_end_factor: 1.0
+  warmup_interval: batch
+  gradient_clip_norm: 1.0
+
+preprocessing:
+  resize: [32, 32]
+  antialias: true
+  normalize_mean: [0.5, 0.5, 0.5]
+  normalize_std: [1.0, 1.0, 1.0]
+
+augmentation:
+  per_transform_probability: 0.5
+  horizontal_flip: true
+  affine:
+    degrees: 10
+    scale: [0.9, 1.1]
+    interpolation: bilinear
+    fill: 128
+  color_jitter:
+    brightness: 0.1
+    contrast: 0.1
+  random_erasing:
+    scale: [0.02, 0.08]
+    ratio: [0.5, 2.0]
+    value: 0.0
