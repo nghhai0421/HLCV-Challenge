@@ -1,0 +1,33 @@
+Run 1: Great Improvement over ConvNext with the bootleg
+CMAP. Still have the same problem with apples identified as cherries
+Bananas classification performed the worst, even
+though its the most recognizable fruit due to its shape.
+And also mango again.
+With Proper CMAP I assumed its should have identify shape better
+Will try preserving aspect ratio input with padding
+
+Run 2: Used 160x160 resizeand keep ratio with padding. Takes a lot
+longer to train, performed worse. Banana mango problem not soved.
+Will try random cropping for training and maybe center crop for inference.
+Back to 128x128
+
+Run 3: Added RadomAugment and Random cropping
+functionality to the Augment training routine.
+Inference Input now doing Resize(142) then CenterCrop(128). This preserves the
+input ratio, although cropping always chance of not focusing on the
+fruit. Performs wore than run 1. But cant make direct comparison since the
+augment training routine got much more intense. Now will try again
+with simple Resize(128x128)
+
+Run 4: Atrocious preformance. Strong Augmentation is definitly the cause. Will reduce
+On the other hand. Resize then crop should be the go to
+
+Run 5: Still Bad Performance. Probably has to revert back to
+the manual augmentation, and not using the RandAugment
+
+Run 6: The reduced augment strength definitely helped with validation score.
+But still not as good as simple Resize (128,128). Will run simple resize baseline again
+
+Run 7: Got back best result so far like run 1. Saved the model this time
+
+Run 8: Increased batch to 128, performance decreases

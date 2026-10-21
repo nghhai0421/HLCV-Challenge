@@ -1,0 +1,10 @@
+Best so far. Now can check the result matrix.
+Mango is the main bottleneck cause the most problem for all models.
+Sliced fruit look very similar to each other, so that might
+be the problem
+
+Quick search revealed others also have this problem.
+Overuse of ColorJitter Augment may imrpove performance but greatly affects specific class,
+which is often the kiwi. Keep brightness/contrast jitter only.
+Also low final output resolution may also be the problem
+Random masking maybe the top suspect. Removing fine details too much also hurts.

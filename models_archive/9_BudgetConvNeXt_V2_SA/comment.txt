@@ -1,0 +1,10 @@
+Expnaded Logging details
+Added Spatial Attention mechanism CBAM
+Same Gernal Performance as the normal Budget ConvNeXt V2.
+But Significantly improves the Mango validation by +0.2.
+Which meets the result from solutions offered from papers that study the problem
+Mangos May have similar texture, color, and details with other sliced fruit,
+but CBAM allows the model to retain the general structure info of the fruit.
+
+In Exchange, the model performs a bit worse on all other fruits.
+I would say this is better generalization

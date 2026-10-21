@@ -1,0 +1,477 @@
+# -*- coding: utf-8 -*-
+"""Train BudgetConvNeXt_V2 and save its best validation checkpoint."""
+
+# Model architecture (shapes omit the batch dimension):
+# Input: RGB resized to 3 x 128 x 128 with antialiasing, converted to a tensor,
+# then normalized with mean 0.5 and standard deviation 1.0 per channel.
+# Stem: Patchify Conv 2 x 2, 3 -> 12, stride 2, no padding -> BN: 12 x 64 x 64 (168 params).
+# Each block: DW Conv 5 x 5, padding 2 -> BN -> PW Conv C -> 2C -> GELU
+# -> GRN(2C) -> PW Conv 2C -> C -> add the input, with no activation afterward.
+# GRN uses spatial L2 norms normalized by their channel mean, separately per image.
+# Its gamma and beta start at zero; GRN also retains its own residual connection.
+# Stage 1: 3 blocks at C=12, each with 948 params: 12 x 64 x 64 (2,844 params).
+# Downsampling: DW Conv 3 x 3, stride 2, padding 1 -> BN -> PW Conv 12 -> 24 -> BN:
+# 24 x 32 x 32 (468 params). There is no activation in the stem or downsampling.
+# Stage 2: 2 blocks at C=24, each with 3,048 params: 24 x 32 x 32 (6,096 params).
+# Head: BN -> adaptive global average pooling: 24 x 1 x 1 -> flatten: 24 features
+# -> Linear 24 -> 10 class logits with bias (298 params including head BN).
+# All tensors use channels-first layout. All convolutions have no bias; pointwise
+# convolutions use stride 1 and no padding. No LayerNorm, DropPath, or output softmax.
+# Total: 9,874 trainable parameters.
+
+import logging
+import sys
+from copy import deepcopy
+from time import perf_counter
+
+import torch
+import torchvision
+import torchvision.transforms.v2 as v2
+from torch import nn
+from torchvision.transforms import InterpolationMode
+
+from challenge_test import Test
+
+
+# Adapted from the official Meta ConvNeXt V2 GRN implementation:
+# https://github.com/facebookresearch/ConvNeXt-V2/blob/main/models/utils.py
+class GRN(nn.Module):
+    """Normalize global channel responses for input shaped [B, C, H, W]."""
+
+    def __init__(self, channels):
+        super().__init__()
+        self.gamma = nn.Parameter(torch.zeros(1, channels, 1, 1))
+        self.beta = nn.Parameter(torch.zeros(1, channels, 1, 1))
+        self.eps = 1e-6
+
+    def forward(self, x):
+        Gx = torch.norm(x, p=2, dim=(2, 3), keepdim=True)
+        Nx = Gx / (Gx.mean(dim=1, keepdim=True) + self.eps)
+        return self.gamma * (x * Nx) + self.beta + x
+
+
+class ConvNeXtV2Block(nn.Module):
+    """Refine features with spatial filtering, channel expansion, and GRN."""
+
+    def __init__(self, channels):
+        super().__init__()
+        expanded_channels = 2 * channels
+        self.residual = nn.Sequential(
+            nn.Conv2d(
+                channels, channels, kernel_size=5, padding=2,
+                groups=channels, bias=False,
+            ),
+            nn.BatchNorm2d(channels),
+            nn.Conv2d(channels, expanded_channels, kernel_size=1, bias=False),
+            nn.GELU(),
+            GRN(expanded_channels),
+            nn.Conv2d(expanded_channels, channels, kernel_size=1, bias=False),
+        )
+
+    def forward(self, images):
+        residual = self.residual(images)
+        return images + residual
+
+
+class BudgetConvNeXt_V2(nn.Module):
+    """Classify 128 x 128 RGB images with five blocks and 9,874 parameters."""
+
+    def __init__(self):
+        super().__init__()
+
+        # Stem
+        self.stem = nn.Sequential(
+            nn.Conv2d(3, 12, kernel_size=2, stride=2, bias=False),
+            nn.BatchNorm2d(12),
+        )
+
+        # Stage 1
+        self.stage1 = nn.Sequential(
+            ConvNeXtV2Block(12),
+            ConvNeXtV2Block(12),
+            ConvNeXtV2Block(12),
+        )
+
+        # Downsample Features
+        self.downsampling = nn.Sequential(
+            nn.Conv2d(12, 12, kernel_size=3, stride=2, padding=1, groups=12,
+                      bias=False),
+            nn.BatchNorm2d(12),
+            nn.Conv2d(12, 24, kernel_size=1, bias=False),
+            nn.BatchNorm2d(24),
+        )
+
+        # Stage 2
+        self.stage2 = nn.Sequential(
+            ConvNeXtV2Block(24),
+            ConvNeXtV2Block(24),
+        )
+
+        # Classifier
+        self.classifier = nn.Sequential(
+            nn.BatchNorm2d(24),
+            nn.AdaptiveAvgPool2d(1),
+            nn.Flatten(),
+            nn.Linear(24, 10),
+        )
+
+    def forward(self, images):
+        features = self.stem(images)
+        features = self.stage1(features)
+        features = self.downsampling(features)
+        features = self.stage2(features)
+        return self.classifier(features)
+
+
+class Trainer(Test):
+    """Provide the challenge interface and manage the training workflow."""
+
+    def __init__(self, data_root="./dataset", epochs=200, batch_size=32,
+                 learning_rate=1e-3, patience=25, seed=42, warmup_epochs=10,
+                 log_path="log.txt", min_learning_rate=1e-6,
+                 weight_decay=0.02, ema_decay=0.999, label_smoothing=0.05,
+                 random_erasing_probability=0.35, gradient_clip_norm=1.0,
+                 warmup_start_factor=0.1, augmentation_probability=0.5):
+        super().__init__()
+        self.data_root = data_root
+        self.epochs = epochs
+        self.batch_size = batch_size
+        self.learning_rate = learning_rate
+        self.patience = patience
+        self.seed = seed
+        self.warmup_epochs = warmup_epochs
+        self.min_learning_rate = min_learning_rate
+        self.weight_decay = weight_decay
+        self.ema_decay = ema_decay
+        self.label_smoothing = label_smoothing
+        self.random_erasing_probability = random_erasing_probability
+        self.gradient_clip_norm = gradient_clip_norm
+        self.warmup_start_factor = warmup_start_factor
+        self.augmentation_probability = augmentation_probability
+        self.checkpoint_path = "model.torch"
+        self.log_path = log_path
+
+    def create_model(self):
+        return BudgetConvNeXt_V2()
+
+    def create_transform(self, inference=True):
+        """Resize and normalize RGB; sample augmentations only for training."""
+        transforms = [v2.Resize((128, 128), antialias=True)]
+
+        if not inference:
+            # Sample each augmentation group independently for every image.
+            transforms.extend([
+                v2.RandomHorizontalFlip(p=self.augmentation_probability),
+                v2.RandomApply([
+                    v2.RandomAffine(
+                        degrees=10,
+                        translate=(0.05, 0.05),
+                        scale=(0.9, 1.1),
+                        interpolation=InterpolationMode.BILINEAR,
+                        fill=128,
+                    ),
+                ], p=self.augmentation_probability),
+                v2.RandomApply([
+                    v2.ColorJitter(brightness=0.1, contrast=0.1),
+                ], p=self.augmentation_probability),
+            ])
+
+        transforms.extend([
+            torchvision.transforms.ToTensor(),
+            v2.Normalize(mean=(0.5, 0.5, 0.5), std=(1.0, 1.0, 1.0)),
+        ])
+
+        if not inference:
+            transforms.append(v2.RandomErasing(
+                p=self.random_erasing_probability,
+                scale=(0.02, 0.08),
+                ratio=(0.5, 2.0),
+                value=0.0,  # Mid-gray in normalized image space.
+            ))
+
+        return torchvision.transforms.Compose(transforms)
+
+    def save_model(self, model):
+        """Save the state dictionary expected by the challenge evaluator."""
+        torch.save(model.state_dict(), self.checkpoint_path)
+
+    def train(self):
+        """Train on all training images and validate after each epoch."""
+        run_started = perf_counter()
+
+        # Configure Logging
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(message)s",
+            handlers=[
+                logging.StreamHandler(sys.stdout),
+                logging.FileHandler(self.log_path, mode="w", encoding="utf-8"),
+            ],
+            force=True,
+        )
+        logger = logging.getLogger(__name__)
+
+        torch.set_num_threads(10) # Set CPU threads
+        torch.manual_seed(self.seed)
+
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.pin_memory = self.device.type == "cuda"
+        self.use_amp = (
+            self.device.type == "cuda"
+            and torch.amp.autocast_mode.is_autocast_available("cuda")
+        )
+        self.scaler = torch.amp.GradScaler("cuda", enabled=self.use_amp)
+
+        # Create Dataset
+        train_data = torchvision.datasets.ImageFolder(
+            root=f"{self.data_root}/train",
+            transform=self.create_transform(inference=False),
+        )
+        val_data = torchvision.datasets.ImageFolder(
+            root=f"{self.data_root}/val",
+            transform=self.create_transform(inference=True),
+        )
+        train_loader = torch.utils.data.DataLoader(
+            train_data, batch_size=self.batch_size, shuffle=True, num_workers=0,
+            pin_memory=self.pin_memory,
+        )
+        val_loader = torch.utils.data.DataLoader(
+            val_data, batch_size=self.batch_size, shuffle=False, num_workers=0,
+            pin_memory=self.pin_memory,
+        )
+
+        # Create Model
+        self.model = self.create_model().to(self.device)
+        parameter_count = sum(p.numel() for p in self.model.parameters())
+        if parameter_count > 10_000:
+            raise ValueError(f"Model has too many parameters: {parameter_count}.")
+
+        # Create EMA Model
+        self.ema_model = deepcopy(self.model).eval().requires_grad_(False)
+
+        # Create Optimizer
+        decay_parameters = []
+        no_decay_parameters = []
+        # Only convolutional and linear weights receive decay; BN and GRN do not.
+        # https://github.com/facebookresearch/ConvNeXt-V2/blob/main/optim_factory.py
+        for module in self.model.modules():
+            for name, parameter in module.named_parameters(recurse=False):
+                if not parameter.requires_grad:
+                    continue
+                if isinstance(module, (nn.Conv2d, nn.Linear)) and name == "weight":
+                    decay_parameters.append(parameter)
+                else:
+                    no_decay_parameters.append(parameter)
+
+        self.criterion = nn.CrossEntropyLoss(label_smoothing=self.label_smoothing)
+        self.optimizer = torch.optim.AdamW(
+            [
+                {"params": decay_parameters, "weight_decay": self.weight_decay},
+                {"params": no_decay_parameters, "weight_decay": 0.0},
+            ],
+            lr=self.learning_rate,
+            weight_decay=0.0,
+        )
+
+        # Schedule Learning Rate
+        steps_per_epoch = len(train_loader)
+        total_steps = self.epochs * steps_per_epoch
+        warmup_steps = self.warmup_epochs * steps_per_epoch
+
+        if 0 < warmup_steps < total_steps:
+            warmup = torch.optim.lr_scheduler.LinearLR(
+                self.optimizer,
+                start_factor=self.warmup_start_factor,
+                end_factor=1.0,
+                total_iters=warmup_steps,
+            )
+            cosine = torch.optim.lr_scheduler.CosineAnnealingLR(
+                self.optimizer,
+                T_max=total_steps - warmup_steps,
+                eta_min=self.min_learning_rate,
+            )
+            self.scheduler = torch.optim.lr_scheduler.SequentialLR(
+                self.optimizer,
+                schedulers=[warmup, cosine],
+                milestones=[warmup_steps],
+            )
+        else:
+            self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+                self.optimizer,
+                T_max=total_steps,
+                eta_min=self.min_learning_rate,
+            )
+
+        logger.info(
+            f"Optimizer: AdamW | "
+            f"LR: {self.learning_rate:.2e} | "
+            f"Warmup: {self.warmup_epochs} epochs | "
+            f"Total: {self.epochs} epochs | "
+            f"Total steps: {total_steps} | "
+            f"Warmup steps: {warmup_steps} | "
+            f"Weight decay: {self.weight_decay} | "
+            f"Min LR: {self.min_learning_rate:.2e}"
+        )
+        logger.info(
+            f"Label smoothing: {self.label_smoothing} | "
+            f"Random erasing: {self.random_erasing_probability} | "
+            f"Gradient clip norm: {self.gradient_clip_norm} | "
+            f"EMA decay: {self.ema_decay} | CUDA AMP: {self.use_amp}"
+        )
+
+        best_accuracy = -1.0
+        best_val_loss = float("inf")
+        best_source = None
+        best_epoch = 0
+        epochs_without_improvement = 0
+
+        # Train Model
+        logger.info(f"Training on {self.device}; {parameter_count} model parameters.")
+        for epoch in range(1, self.epochs + 1):
+            # CUDA work is asynchronous; synchronize at timing boundaries.
+            if self.device.type == "cuda":
+                torch.cuda.synchronize(self.device)
+            epoch_started = perf_counter()
+
+            train_loss = self._train_epoch(train_loader)
+            if self.device.type == "cuda":
+                torch.cuda.synchronize(self.device)
+            train_seconds = perf_counter() - epoch_started
+
+            # Validate Model
+            val_started = perf_counter()
+            val_loss, val_accuracy = self._evaluate(self.model, val_loader)
+            if self.device.type == "cuda":
+                torch.cuda.synchronize(self.device)
+            val_seconds = perf_counter() - val_started
+
+            # Validate EMA Model
+            ema_val_started = perf_counter()
+            ema_val_loss, ema_val_accuracy = self._evaluate(self.ema_model, val_loader)
+            if self.device.type == "cuda":
+                torch.cuda.synchronize(self.device)
+            ema_val_seconds = perf_counter() - ema_val_started
+
+            # Save Best Model
+            candidate_model = self.model
+            candidate_source = "normal"
+            candidate_accuracy = val_accuracy
+            candidate_loss = val_loss
+            if (
+                ema_val_accuracy > candidate_accuracy
+                or (ema_val_accuracy == candidate_accuracy and ema_val_loss < candidate_loss)
+            ):
+                candidate_model = self.ema_model
+                candidate_source = "ema"
+                candidate_accuracy = ema_val_accuracy
+                candidate_loss = ema_val_loss
+
+            improved = (
+                candidate_accuracy > best_accuracy
+                or (candidate_accuracy == best_accuracy and candidate_loss < best_val_loss)
+            )
+            if improved:
+                best_accuracy = candidate_accuracy
+                best_val_loss = candidate_loss
+                best_source = candidate_source
+                best_epoch = epoch
+                self.save_model(candidate_model)
+                epochs_without_improvement = 0
+            else:
+                epochs_without_improvement += 1
+
+            epoch_seconds = perf_counter() - epoch_started
+            logger.info(
+                f"Epoch {epoch:02d}/{self.epochs}: "
+                f"train_loss={train_loss:.4f}, val_loss={val_loss:.4f}, "
+                f"val_acc={val_accuracy:.3f}, "
+                f"ema_val_loss={ema_val_loss:.4f}, ema_val_acc={ema_val_accuracy:.3f}, "
+                f"lr={self.optimizer.param_groups[0]['lr']:.2e}, "
+                f"train_time={train_seconds:.2f}s, "
+                f"val_time={val_seconds:.2f}s, "
+                f"ema_val_time={ema_val_seconds:.2f}s, "
+                f"epoch_time={epoch_seconds:.2f}s",
+            )
+            if improved:
+                logger.info(
+                    f"  Saved new best {best_source} checkpoint to {self.checkpoint_path}",
+                )
+            if epochs_without_improvement >= self.patience:
+                logger.info(f"Early stopping after {epoch} epochs.")
+                break
+
+        logger.info(f"Best validation accuracy: {best_accuracy:.3f}")
+        logger.info(f"Best validation loss: {best_val_loss:.4f}")
+        logger.info(f"Best checkpoint source: {best_source}; epoch: {best_epoch}")
+        logger.info(f"Best checkpoint: {self.checkpoint_path}")
+        logger.info(f"Total training run time: {perf_counter() - run_started:.2f}s")
+
+    def _train_epoch(self, loader):
+        """Update model weights using one complete pass through the loader."""
+        self.model.train()
+        loss_sum = 0.0
+        sample_count = 0
+
+        for images, labels in loader:
+            images = images.to(self.device, non_blocking=self.pin_memory)
+            labels = labels.to(self.device, non_blocking=self.pin_memory)
+
+            self.optimizer.zero_grad(set_to_none=True)
+            with torch.amp.autocast(device_type=self.device.type, enabled=self.use_amp):
+                logits = self.model(images)
+                loss = self.criterion(logits, labels)
+
+            self.scaler.scale(loss).backward()
+            self.scaler.unscale_(self.optimizer)
+            nn.utils.clip_grad_norm_(
+                self.model.parameters(), max_norm=self.gradient_clip_norm,
+            )
+            previous_scale = self.scaler.get_scale()
+            self.scaler.step(self.optimizer)
+            self.scaler.update()
+            # An overflow skips the optimizer step and reduces the scaler value.
+            if self.scaler.get_scale() >= previous_scale:
+                self.scheduler.step()
+                self._update_ema()
+
+            loss_sum += loss.item() * labels.size(0)
+            sample_count += labels.size(0)
+
+        return loss_sum / sample_count
+
+    @torch.no_grad()
+    def _update_ema(self):
+        """Average learned parameters and copy current BatchNorm statistics.
+        # https://github.com/facebookresearch/ConvNeXt-V2/blob/main/engine_finetune.py"""
+        for ema_parameter, parameter in zip(
+            self.ema_model.parameters(), self.model.parameters()
+        ):
+            ema_parameter.lerp_(parameter, 1.0 - self.ema_decay)
+
+        # Copy buffers, including floating running statistics and integer counters.
+        for ema_buffer, buffer in zip(self.ema_model.buffers(), self.model.buffers()):
+            ema_buffer.copy_(buffer)
+
+    def _evaluate(self, model, loader):
+        """Measure float32 validation loss and accuracy for one model."""
+        model.eval()
+        loss_sum = 0.0
+        correct = 0
+        sample_count = 0
+
+        with torch.no_grad():
+            for images, labels in loader:
+                images = images.to(self.device, non_blocking=self.pin_memory)
+                labels = labels.to(self.device, non_blocking=self.pin_memory)
+                logits = model(images)
+
+                loss_sum += self.criterion(logits, labels).item() * labels.size(0)
+                correct += (logits.argmax(dim=1) == labels).sum().item()
+                sample_count += labels.size(0)
+
+        return loss_sum / sample_count, correct / sample_count
+
+
+if __name__ == "__main__":
+    trainer = Trainer()
+    trainer.train()

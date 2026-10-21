@@ -1,0 +1,158 @@
+param_count: 9874
+run:
+  date: 2026-10-17
+  result_file: result_2026-10-17.txt
+  log_file: log.txt
+  status: completed
+  requested_epochs: 200
+  completed_epochs: 200
+  stopped_early: false
+  best_epoch: 142
+  best_checkpoint_source: normal
+  train_accuracy: 0.900
+  validation_accuracy: 0.768
+  best_checkpoint_validation_loss: 1.0476
+  total_training_seconds: 9801.65
+  device: cpu
+  checkpoint_name: model.torch
+  checkpoint_archived: true
+  training_script: challenge_train.py
+  metadata_sources: [challenge_train.py, log.txt, result_2026-10-17.txt]
+  source_comparison:
+    script_last_modified: '2026-10-17 23:28:46'
+    log_last_modified: '2026-10-17 23:18:23'
+    checkpoint_last_modified: '2026-10-17 22:25:50'
+    result_last_modified: '2026-10-17 23:19:31'
+    script_modified_after_log: true
+    note: 'The archived script is the current source snapshot. After training, augmentation and optimization settings were exposed as constructor parameters and early stopping with patience=25 was restored. The recorded run completed all 200 epochs. Logged settings and outcomes take precedence; unlogged settings describe the archived script and cannot be confirmed as the exact run configuration.'
+
+data:
+  root: ./dataset
+  training_split: train
+  validation_split: val
+
+model:
+  name: BudgetConvNeXt_V2
+  input_resolution: [128, 128]
+  input_channels: 3
+  stem:
+    convolution_channels: [3, 12]
+    convolution_kernel_size: 2
+    convolution_stride: 2
+    convolution_padding: 0
+    convolution_bias: false
+    batch_normalization: true
+    activation: null
+    output_resolution: [64, 64]
+    trainable_params: 168
+  block:
+    convolution_kernel_sizes: [5, 1, 1]
+    convolution_strides: [1, 1, 1]
+    convolution_padding: [2, 0, 0]
+    spatial_convolution: depthwise
+    channel_expansion_factor: 2
+    convolution_bias: false
+    normalization_after_depthwise: BatchNorm2d
+    activation_after_expansion: GELU
+    normalization_after_activation: GRN
+    shortcut: identity
+    shortcut_addition_activation: null
+  grn:
+    norm: spatial_l2_per_channel
+    response_normalization: channel_mean_per_image
+    epsilon: 0.000001
+    gamma_initialization: 0.0
+    beta_initialization: 0.0
+    residual_connection: true
+  stages:
+    stage_1:
+      blocks: 3
+      block_channels: [12, 24, 12]
+      output_resolution: [64, 64]
+      trainable_params_per_block: 948
+      trainable_params: 2844
+    stage_2:
+      blocks: 2
+      block_channels: [24, 48, 24]
+      output_resolution: [32, 32]
+      trainable_params_per_block: 3048
+      trainable_params: 6096
+  downsampling:
+    depthwise_convolution_channels: [12, 12]
+    depthwise_kernel_size: 3
+    depthwise_stride: 2
+    depthwise_padding: 1
+    pointwise_convolution_channels: [12, 24]
+    pointwise_kernel_size: 1
+    batch_normalization_after_each_convolution: true
+    convolution_bias: false
+    activation: null
+    output_resolution: [32, 32]
+    trainable_params: 468
+  head_batch_normalization: true
+  global_average_pooling: true
+  classifier_input_features: 24
+  num_classes: 10
+  classifier_bias: true
+  head_trainable_params: 298
+
+training:
+  epochs: 200
+  batch_size: 32
+  learning_rate: 0.001
+  optimizer: AdamW
+  weight_decay: 0.02
+  weight_decay_applies_to: convolution_and_linear_weights
+  no_decay_parameters: biases_and_normalization_parameters
+  loss: CrossEntropyLoss
+  label_smoothing: 0.05
+  early_stopping_patience: 25
+  early_stopping_note: 'Restored in the archived script after the recorded run; the run did not use this stopping rule.'
+  checkpoint_selection: highest_validation_accuracy_then_lowest_validation_loss_across_normal_and_ema
+  seed: 42
+  cpu_threads: 10
+  data_loader_workers: 0
+  warmup_epochs: 10
+  warmup_start_factor: 0.1
+  warmup_end_factor: 1.0
+  scheduler: linear_warmup_then_cosine_annealing
+  scheduler_interval: batch
+  min_learning_rate: 0.000001
+  steps_per_epoch: 72
+  total_steps: 14400
+  warmup_steps: 720
+  cosine_steps: 13680
+  completed_steps: 14400
+  gradient_clip_norm: 1.0
+  cuda_amp_enabled_for_run: false
+  ema:
+    decay: 0.999
+    update_interval: successful_optimizer_step
+    buffers: copy_from_normal_model
+    validation: every_epoch
+    checkpoint_format: single_selected_model_state_dict
+
+preprocessing:
+  resize: [128, 128]
+  antialias: true
+  tensor_layout: channels_first
+  normalize_mean: [0.5, 0.5, 0.5]
+  normalize_std: [1.0, 1.0, 1.0]
+
+augmentation:
+  per_transform_probability: 0.5
+  horizontal_flip: true
+  affine:
+    degrees: 10
+    translate: [0.05, 0.05]
+    scale: [0.9, 1.1]
+    interpolation: bilinear
+    fill: 128
+  color_jitter:
+    brightness: 0.1
+    contrast: 0.1
+  random_erasing:
+    probability: 0.35
+    scale: [0.02, 0.08]
+    ratio: [0.5, 2.0]
+    value: 0.0
